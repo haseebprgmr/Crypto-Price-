@@ -27,9 +27,23 @@
       margin-bottom: 1.5rem;
       font-size: 1.5rem;
     }
-    .rate {
-      font-size: 1.2rem;
-      margin-bottom: 1.5rem;
+    .rate-box {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    .rate-box.pi {
+      border-left: 5px solid #ff5722; /* Orange accent for Pi Network */
+    }
+    .rate-box.mvr {
+      border-left: 5px solid #4caf50; /* Green accent for MVR */
+    }
+    .rate-box strong {
+      display: block;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
     }
     input {
       width: 100%;
@@ -62,9 +76,13 @@
 <body>
   <div class="container">
     <h1>Pi to MVR Converter</h1>
-    <div class="rate">
-      <strong>Current Pi Network Price:</strong> <span id="piPrice">Loading...</span><br>
-      <strong>Current MVR to USDT Rate:</strong> <span id="displayRate">Loading...</span>
+    <div class="rate-box pi">
+      <strong>Current Pi Network Price:</strong>
+      <span id="piPrice">Loading...</span>
+    </div>
+    <div class="rate-box mvr">
+      <strong>Current USDT to MVR Rate:</strong>
+      <span id="displayRate">Loading...</span>
     </div>
     <input type="number" id="cryptoAmount" placeholder="Enter Pi Network Amount" step="0.01">
     <button onclick="calculateMVR()">Calculate MVR</button>
