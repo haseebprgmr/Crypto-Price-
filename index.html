@@ -63,6 +63,7 @@
   <div class="container">
     <h1>Pi to MVR Converter</h1>
     <div class="rate">
+      <strong>Current Pi Network Price:</strong> <span id="piPrice">Loading...</span><br>
       <strong>Current MVR to USDT Rate:</strong> <span id="displayRate">Loading...</span>
     </div>
     <input type="number" id="cryptoAmount" placeholder="Enter Pi Network Amount" step="0.01">
@@ -100,9 +101,10 @@
         const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=pi-network&vs_currencies=usd`);
         const data = await response.json();
         piPriceUSD = data["pi-network"].usd;
+        document.getElementById('piPrice').textContent = `$${piPriceUSD.toFixed(4)}`;
       } catch (error) {
         console.error("Error fetching Pi Network price:", error);
-        alert("Failed to fetch Pi Network price. Please try again.");
+        document.getElementById('piPrice').textContent = "Error loading price.";
       }
     }
 
@@ -130,6 +132,9 @@
     // Fetch the conversion rate and Pi Network price when the page loads
     fetchConversionRate();
     fetchPiPrice();
+
+    // Refresh Pi Network price every 60 seconds
+    setInterval(fetchPiPrice, 60000);
   </script>
 </body>
 </html>
