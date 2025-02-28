@@ -6,54 +6,64 @@
   <title>Pi to MVR Converter</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
     .container {
-      max-width: 400px;
-      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       text-align: center;
+      width: 300px;
     }
-    input, button {
-      margin: 10px 0;
-      padding: 10px;
+    h1 {
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+    }
+    .rate {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+    button {
       width: 100%;
+      padding: 0.75rem;
+      background: #ff5722;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #e64a19;
     }
     .result {
-      margin-top: 20px;
-      font-size: 1.2em;
-    }
-    .admin-section {
-      margin-top: 20px;
-      border-top: 1px solid #ccc;
-      padding-top: 20px;
-    }
-    .admin-section input {
-      margin-bottom: 10px;
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Pi to MVR Converter</h1>
-    <div id="userSection">
-      <p><strong>Current MVR to USDT Rate:</strong> <span id="displayRate">Loading...</span></p>
-      <button onclick="fetchPiPrice()">Convert Pi to MVR</button>
-      <div class="result" id="result"></div>
+    <div class="rate">
+      <strong>Current MVR to USDT Rate:</strong> <span id="displayRate">Loading...</span>
     </div>
-
-    <div class="admin-section">
-      <h3>Admin Section</h3>
-      <input type="password" id="adminPassword" placeholder="Enter Admin Password">
-      <input type="number" id="newRate" placeholder="Enter New MVR to USDT Rate" step="0.01">
-      <button onclick="setConversionRate()">Set Conversion Rate</button>
-    </div>
+    <button onclick="fetchPiPrice()">Convert Pi to MVR</button>
+    <div class="result" id="result"></div>
   </div>
 
   <script>
     const JSONBIN_API_KEY = "$2a$10$dQjqnLB2i7wOWKDOwzJ0UuOqSwzQWUJSBBRrbHgz4aVkml7rG89wK"; // Replace with your JSONBin API key
     const JSONBIN_BIN_ID = "67c24392e41b4d34e49e9245"; // Replace with your JSONBin bin ID
-    const adminPassword = "admin123"; // Hardcoded admin password (for demo purposes)
 
     let conversionRate = null; // Stores the MVR to USDT rate
 
@@ -74,29 +84,7 @@
       }
     }
 
-    // Update the conversion rate on JSONBin
-    async function updateConversionRate(newRate) {
-      try {
-        const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Master-Key": JSONBIN_API_KEY,
-          },
-          body: JSON.stringify({ rate: newRate }),
-        });
-        const data = await response.json();
-        console.log("Rate updated successfully:", data);
-        conversionRate = newRate;
-        document.getElementById('displayRate').textContent = conversionRate;
-        alert("Conversion rate updated successfully!");
-      } catch (error) {
-        console.error("Error updating conversion rate:", error);
-        alert("Failed to update conversion rate. Please try again.");
-      }
-    }
-
-    // Function to fetch Pi Network price and convert to MVR
+    // Fetch Pi Network price and convert to MVR
     async function fetchPiPrice() {
       if (!conversionRate) {
         alert("Conversion rate not set. Please contact the admin.");
@@ -104,15 +92,10 @@
       }
 
       try {
-        // Fetch Pi Network price in USD
         const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=pi-network&vs_currencies=usd`);
         const data = await response.json();
         const piPriceUSD = data["pi-network"].usd;
-
-        // Calculate price in MVR
         const piPriceMVR = piPriceUSD * conversionRate;
-
-        // Display result
         document.getElementById('result').innerHTML = `
           <strong>Pi Network Price:</strong> $${piPriceUSD.toFixed(2)} × ${conversionRate} = <strong>${piPriceMVR.toFixed(2)} MVR</strong>
         `;
@@ -120,25 +103,6 @@
         console.error("Error fetching data:", error);
         document.getElementById('result').innerHTML = "Failed to fetch Pi Network price. Please try again.";
       }
-    }
-
-    // Function to set the conversion rate (admin-only)
-    async function setConversionRate() {
-      const password = document.getElementById('adminPassword').value;
-      const newRate = parseFloat(document.getElementById('newRate').value);
-
-      if (password !== adminPassword) {
-        alert("Incorrect admin password.");
-        return;
-      }
-
-      if (!newRate || isNaN(newRate)) {
-        alert("Please enter a valid MVR to USDT rate.");
-        return;
-      }
-
-      // Update conversion rate on JSONBin
-      await updateConversionRate(newRate);
     }
 
     // Fetch the conversion rate when the page loads
